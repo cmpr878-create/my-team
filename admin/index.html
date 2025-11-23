@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>GCM Sports | Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#0f1115;--card:#161a22;--muted:#7b8190;--text:#e9eefc;--accent2:#00bcd4;--danger:#d32f2f;--border:#263043}
+    *{box-sizing:border-box} html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,Segoe UI,Arial,sans-serif}
+    a{color:inherit;text-decoration:none}
+    .topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;background:#0b121a;border-bottom:1px solid var(--border);padding:12px 16px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .brand-icon{width:36px;height:36px;filter:drop-shadow(0 0 10px rgba(0,188,212,.25))}
+    .brand h1{margin:0;font-size:20px}
+    .tagline{font-size:12px;color:var(--muted)}
+    .nav{display:flex;gap:12px}
+    .nav-link{padding:8px 12px;border-radius:8px;color:#cfd9f2}
+    .nav-link:hover{background:#131722;color:#fff}
+    .admin-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:16px}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px}
+    .form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:8px}
+    .input{background:#0d1420;border:1px solid var(--border);color:var(--text);border-radius:8px;padding:8px 10px}
+    .input:focus{outline:1px solid var(--accent2)}
+    .btn{background:var(--accent2);color:#061422;border:none;border-radius:8px;padding:8px 12px;cursor:pointer;font-weight:600}
+    .btn:hover{filter:brightness(1.05)}
+    .btn.danger{background:var(--danger);color:#fff}
+    .list{display:grid;gap:8px}
+    .item{display:flex;justify-content:space-between;align-items:center;background:#121723;border:1px solid var(--border);border-radius:8px;padding:8px}
+    .hint{color:var(--muted);font-size:12px;margin-top:8px}
+    .settings{display:flex;flex-wrap:wrap;gap:8px}
+    .footer{padding:16px;border-top:1px solid var(--border);color:#8fa1c2;display:flex;justify-content:space-between}
+    .badge{display:inline-block;padding:4px 8px;border-radius:999px;font-size:12px}
+    .badge.upcoming{background:#203040;color:#aee0ff}
+    .badge.completed{background:#1d2a1f;color:#a9f0b1}
+    .badge.Today{background:#3d1212;color:#ffb3b3}
+    @media (max-width:960px){.admin-grid{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}}
+  </style>
+   <link rel="manifest" href="manifest.json">
+   <meta name="theme-color" content="#00bcd4">
+   <script src="auth.js"></script>
+<script src="auth.js"></script>
+  <script>
+  (async () => {
+    const ok = await window.auth.isAuthed();
+    if (!ok) window.location.href = 'login.html';
+  })();
+  </script>
+</head>
+<body>
+  <script src="auth.js"></script>
+<script>
+  (async () => {
+    const ok = await window.auth.isAuthed();
+    if (!ok) window.location.href = 'login.html';
+  })();
+</script>
+<button onclick="window.auth.logout()">Logout</button>
+  <header class="topbar">
+    <div class="brand">
+      <svg class="brand-icon" viewBox="0 0 24 24" fill="#00bcd4"><circle cx="12" cy="12" r="10"/></svg>
+      <div>
+        <h1>Admin panel</h1>
+        <span class="tagline">Manage teams, matches, results & updates</span>
+      </div>
+    </div>
+    <nav class="nav">
+      <a href="index.html" class="nav-link">Viewer</a>
+    </nav>
+  </header>
+
+  <main class="admin-grid">
+    <section class="card">
+      <h3>Teams</h3>
+      <form id="teamForm" class="form-grid">
+        <input type="text" id="teamName" class="input" placeholder="Team name" required>
+        <input type="text" id="teamShort" class="input" placeholder="Short code (e.g., RKT)" required>
+        <input type="text" id="teamLogo" class="input" placeholder="Logo URL (optional)">
+        <input type="text" id="teamPlayers" class="input" placeholder="Players (comma separated)">
+        <button class="btn">Add team</button>
+      </form>
+      <div id="teamList" class="list"></div>
+    </section>
+
+    <section class="card">
+      <h3>Matches</h3>
+      <form id="matchForm" class="form-grid">
+        <input type="date" id="matchDate" class="input" required>
+        <!-- <input type="time" id="matchTime" class="input" required> -->
+        <select id="teamA" class="input" required></select>
+        <select id="teamB" class="input" required></select>
+        <input type="text" id="venue" class="input" placeholder="Venue" required>
+        <select id="status" class="input">
+          <option value="upcoming">Upcoming</option>
+          <option value="Today">Today</option>
+          <option value="completed">Completed</option>
+        </select>
+        <button class="btn">Add match</button>
+      </form>
+      <div id="adminMatchList" class="list"></div>
+    </section>
+
+    <section class="card">
+      <h3>Results</h3>
+      <form id="resultForm" class="form-grid">
+        <select id="resultMatch" class="input" required></select>
+        <select id="winner" class="input">
+          <option value="">Select winner (or leave empty for tie)</option>
+        </select>
+        <input type="text" id="scoreNote" class="input" placeholder="Score/Notes (e.g., 2-1 games)">
+        <button class="btn">Update result</button>
+      </form>
+      <div id="resultInfo" class="hint"></div>
+    </section>
+
+    <section class="card">
+      <h3>Viewer updates</h3>
+      <form id="updateForm" class="form-grid">
+        <input type="text" id="updateText" class="input" placeholder="Short update text" required>
+        <button class="btn">Publish</button>
+      </form>
+      <div id="adminUpdates" class="list"></div>
+    </section>
+
+    <section class="card">
+      <h3>Settings</h3>
+      <div class="settings">
+        <button id="reseed" class="btn danger">Reset & re-seed data</button>
+        <button id="exportData" class="btn">Export JSON</button>
+        <input type="file" id="importFile" class="input">
+        <button id="importData" class="btn">Import JSON</button>
+      </div>
+      <div id="settingsInfo" class="hint"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div>© Badminton Premier — Admin</div>
+    <a href="index.html">Go to Viewer</a>
+  </footer>
+
+  <script>
+    // Shared storage helpers
+    const KEY='bp_data_v1';
+    const getData=()=>JSON.parse(localStorage.getItem(KEY))||{teams:[],matches:[],updates:[],meta:{pointsRules:{win:2,tie:1,loss:0}}};
+    const saveData=(d)=>localStorage.setItem(KEY,JSON.stringify(d));
+    const uid=(p='ID')=>p+Math.random().toString(36).slice(2,8);
+
+    function refreshTeams(){
+      const data=getData(); const list=document.getElementById('teamList'); list.innerHTML='';
+      data.teams.forEach(t=>{
+        const row=document.createElement('div'); row.className='item';
+        row.innerHTML=`<div><strong>${t.name}</strong> (${t.short})</div>
+          <div style="display:flex;gap:8px">
+            <button class="btn" data-edit="${t.id}">Edit</button>
+            <button class="btn danger" data-del="${t.id}">Delete</button>
+          </div>`;
+        list.appendChild(row);
+      });
+      const options=data.teams.map(t=>`<option value="${t.id}">${t.name}</option>`).join('');
+      document.getElementById('teamA').innerHTML=options;
+      document.getElementById('teamB').innerHTML=options;
+      document.getElementById('winner').innerHTML=`<option value="">Tie</option>`+options;
+      document.getElementById('resultMatch').innerHTML=data.matches.map(m=>`<option value="${m.id}">${m.id} • ${m.date} ${m.time} • ${m.teamA} vs ${m.teamB}</option>`).join('');
+    }
+
+    function refreshMatches(){
+      const data=getData(); const list=document.getElementById('adminMatchList'); list.innerHTML='';
+      data.matches.slice().sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time)).forEach(m=>{
+        const row=document.createElement('div'); row.className='item';
+        row.innerHTML=`<div>
+          <strong>${m.date} ${m.time}</strong> • ${m.teamA} vs ${m.teamB} • ${m.venue}
+          <br><span class="badge ${m.status}">${m.status}</span>
+          ${m.result ? ` • Result: ${m.result.winner||'Tie'} (${m.result.note||''})` : ''}
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn" data-edit="${m.id}">Edit</button>
+          <button class="btn danger" data-del="${m.id}">Delete</button>
+        </div>`;
+        list.appendChild(row);
+      });
+    }
+
+    function refreshUpdates(){
+      const data=getData(); const list=document.getElementById('adminUpdates'); list.innerHTML='';
+      data.updates.slice().reverse().forEach(u=>{
+        const row=document.createElement('div'); row.className='item';
+        row.innerHTML=`<div>${u.text}</div><div><button class="btn danger" data-del="${u.id}">Delete</button></div>`;
+        list.appendChild(row);
+      });
+    }
+
+    function bindTeamForm(){
+      const form=document.getElementById('teamForm');
+      
+      form.addEventListener('submit',(e)=>{
+        e.preventDefault();
+        const name=document.getElementById('teamName').value.trim();
+        const short=document.getElementById('teamShort').value.trim().toUpperCase();
+        const logo=document.getElementById('teamLogo').value.trim();
+        if(!name||!short) return;
+        const data=getData();
+        if(data.teams.some(t=>t.id===short||t.short===short)){alert('এই Short code আগেই আছে। অন্যটা দিন।');return;}
+        const players = document.getElementById('teamPlayers').value
+                  .split(',')
+                  .map(p => p.trim())
+                  .filter(Boolean);
+
+     data.teams.push({ id: short, name, short, logo, players }); saveData(data); form.reset(); refreshTeams();
+      });
+
+      document.getElementById('teamList').addEventListener('click',(e)=>{
+        const id=e.target.dataset.edit||e.target.dataset.del; if(!id) return;
+        const data=getData(); const idx=data.teams.findIndex(t=>t.id===id); if(idx<0) return;
+        if(e.target.dataset.edit){
+          const t=data.teams[idx];
+          const name=prompt('New team name:',t.name)||t.name;
+          const logo=prompt('New logo URL (optional):',t.logo||'')||t.logo;
+          data.teams[idx]={...t,name,logo}; saveData(data); refreshTeams(); refreshMatches();
+        }else{
+          if(!confirm('Delete team? Matches with this team will remain unchanged.')) return;
+          data.teams.splice(idx,1); saveData(data); refreshTeams(); refreshMatches();
+        }
+      });
+    }
+
+    function bindMatchForm(){
+      const form=document.getElementById('matchForm');
+      form.addEventListener('submit',(e)=>{
+        e.preventDefault();
+        const date=document.getElementById('matchDate').value;
+        // const time=document.getElementById('matchTime').value;
+        const teamA=document.getElementById('teamA').value;
+        const teamB=document.getElementById('teamB').value;
+        const venue=document.getElementById('venue').value.trim();
+        const status=document.getElementById('status').value;
+        if(!date||!teamA||!teamB||!venue){alert('Fill all fields');return;}
+        if(teamA===teamB){alert('Team A & Team B must be different');return;}
+        const data=getData(); const id=uid('M');
+        data.matches.push({id,date,teamA,teamB,venue,status,result:null}); saveData(data);
+        form.reset(); refreshMatches(); refreshTeams();
+      });
+
+      document.getElementById('adminMatchList').addEventListener('click',(e)=>{
+        const id=e.target.dataset.edit||e.target.dataset.del; if(!id) return;
+        const data=getData(); const idx=data.matches.findIndex(m=>m.id===id); if(idx<0) return;
+        const m=data.matches[idx];
+        if(e.target.dataset.edit){
+          const date=prompt('Date (YYYY-MM-DD):',m.date)||m.date;
+          // const time=prompt('Time (HH:MM):',m.time)||m.time;
+          const venue=prompt('Venue:',m.venue)||m.venue;
+          const status=prompt('Status (upcoming/Today/completed):',m.status)||m.status;
+          data.matches[idx]={...m,date,time,venue,status}; saveData(data); refreshMatches(); refreshTeams();
+        }else{
+          if(!confirm('Delete match?')) return;
+          data.matches.splice(idx,1); saveData(data); refreshMatches(); refreshTeams();
+        }
+      });
+    }
+
+    function bindResultForm(){
+      const form=document.getElementById('resultForm');
+      form.addEventListener('submit',(e)=>{
+        e.preventDefault();
+        const matchId=document.getElementById('resultMatch').value;
+        const winner=document.getElementById('winner').value||null;
+        const note=document.getElementById('scoreNote').value.trim();
+        const data=getData(); const idx=data.matches.findIndex(m=>m.id===matchId); if(idx<0) return;
+        const m=data.matches[idx];
+        data.matches[idx]={...m,status:'completed',result:{winner,note}}; saveData(data);
+        document.getElementById('resultInfo').textContent=`Updated ${matchId}: ${winner||'Tie'} ${note?`• ${note}`:''}`;
+        refreshMatches();
+      });
+    }
+
+    function bindUpdatesForm(){
+      const form=document.getElementById('updateForm');
+      form.addEventListener('submit',(e)=>{
+        e.preventDefault();
+        const text=document.getElementById('updateText').value.trim(); if(!text) return;
+        const data=getData(); data.updates.push({id:uid('U'),text}); saveData(data);
+        form.reset(); refreshUpdates();
+      });
+
+      document.getElementById('adminUpdates').addEventListener('click',(e)=>{
+        const id=e.target.dataset.del; if(!id) return;
+        const data=getData(); const idx=data.updates.findIndex(u=>u.id===id); if(idx<0) return;
+        data.updates.splice(idx,1); saveData(data); refreshUpdates();
+      });
+    }
+
+    function bindSettings(){
+      document.getElementById('reseed').addEventListener('click',()=>{
+        if(!confirm('Reset and re-seed sample data?')) return;
+        localStorage.removeItem(KEY); location.reload();
+      });
+
+      document.getElementById('exportData').addEventListener('click',()=>{
+        const data=getData(); const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+        const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='badminton_data.json'; a.click(); URL.revokeObjectURL(a.href);
+        document.getElementById('settingsInfo').textContent='Exported data.';
+      });
+
+      document.getElementById('importData').addEventListener('click',()=>{
+        const file=document.getElementById('importFile').files?.[0]; if(!file){alert('Select a JSON file first'); return;}
+        const reader=new FileReader();
+        reader.onload=()=>{
+          try{
+            const obj=JSON.parse(reader.result);
+            if(!obj.teams||!obj.matches) throw new Error('Invalid JSON');
+            localStorage.setItem(KEY,JSON.stringify(obj));
+            document.getElementById('settingsInfo').textContent='Imported data. Reloading...';
+            setTimeout(()=>location.reload(),800);
+          }catch(e){alert('Invalid JSON file.');}
+        };
+        reader.readAsText(file);
+      });
+    }
+
+    function initAdmin(){
+      refreshTeams(); refreshMatches(); refreshUpdates();
+      bindTeamForm(); bindMatchForm(); bindResultForm(); bindUpdatesForm(); bindSettings();
+    }
+    document.addEventListener('DOMContentLoaded', initAdmin);
+  </script>
+   <script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js');
+  }
+  </script>
+  <script>
+  (async () => {
+    const ok = await window.auth.isAuthed();
+    if (!ok) window.location.href = 'login.html';
+  })();
+</script>
+</body>
+</html>

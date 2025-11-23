@@ -1,0 +1,22 @@
+
+{
+  "name": "GCM Sports",
+  "short_name": "GCM",
+  "start_url": "/GCM-Sports/index.html",
+  "scope": "/GCM-Sports/",
+  "display": "standalone",
+  "background_color": "#0f1115",
+  "theme_color": "#00bcd4",
+  "icons": [
+    {
+      "src": "assets/icons/https://i.postimg.cc/0jSx3Gqg/Payra-Prashad-png.png ",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/icons/https://i.postimg.cc/tTnbt6dK/Vector-Smart-Object.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

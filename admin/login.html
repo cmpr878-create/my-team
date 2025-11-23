@@ -1,0 +1,18 @@
+<form id="loginForm">
+  <label>Passcode <input type="password" id="passcode" required /></label>
+  <button type="submit">Login</button>
+</form>
+<p id="msg"></p>
+<script src="auth.js"></script>
+<script>
+  document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const input = document.getElementById('passcode').value.trim();
+    const ok = await window.auth.verify(input);
+    if (ok) {
+      window.location.href = 'index.html';
+    } else {
+      document.getElementById('msg').textContent = 'ভুল পাসওয়ার্ড';
+    }
+  });
+</script>

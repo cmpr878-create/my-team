@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>GCM Sports | Viewer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#0f1115;--card:#161a22;--muted:#7b8190;--text:#e9eefc;--accent:#2ea043;--accent2:#00bcd4;--danger:#d32f2f;--border:#263043}
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,Segoe UI,Arial,sans-serif}
+    a{color:inherit;text-decoration:none}
+    .topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;background:#0c0f14;border-bottom:1px solid var(--border);padding:12px 16px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .brand-icon{width:36px;height:36px;filter:drop-shadow(0 0 10px rgba(0,188,212,.25))}
+    .brand h1{margin:0;font-size:20px}
+    .tagline{font-size:12px;color:var(--muted)}
+    .nav{display:flex;gap:12px}
+    .nav-link{padding:8px 12px;border-radius:8px;color:#cfd9f2}
+    .nav-link.active,.nav-link:hover{background:#131722;color:#fff}
+    .hero{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:16px}
+    .hero-slide{position:relative;min-height:160px;border-radius:12px;overflow:hidden;background:linear-gradient(135deg,#0c1b29,#12263c);border:1px solid var(--border)}
+    .hero-slide::after{content:""; position:absolute; inset:0;background-image:url('https://images.unsplash.com/photo-1517649763962-0c623066013b?q=80&w=1200&auto=format&fit=crop');opacity:.18;background-size:cover;background-position:center}
+    .hero-text{position:absolute;left:16px;bottom:16px}
+    .hero-text h2{margin:0 0 6px 0}
+    .page{padding:16px}
+    .hidden{display:none}
+    .section-header{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:8px}
+    .section-header .sub{color:var(--muted);font-size:12px}
+    .cards-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .card-match{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;display:flex;align-items:center;gap:12px}
+    .team{display:flex;align-items:center;gap:8px}
+    .team-logo{width:28px;height:28px;border-radius:50%;background:#0d1520;border:1px solid var(--border);object-fit:cover}
+    .vs{margin:0 8px;color:var(--muted);font-weight:700}
+    .update-list{display:grid;gap:8px}
+    .update-item{background:#121723;border:1px solid var(--border);border-radius:8px;padding:10px}
+    .filters{display:flex;flex-wrap:wrap;gap:8px}
+    .input{background:#0d1420;border:1px solid var(--border);color:var(--text);border-radius:8px;padding:8px 10px}
+    .input:focus{outline:1px solid var(--accent2)}
+    .btn{background:var(--accent2);color:#061422;border:none;border-radius:8px;padding:8px 12px;cursor:pointer;font-weight:600}
+    .btn:hover{filter:brightness(1.05)}
+    .match-table{display:grid;gap:8px}
+    .match-row{display:grid;grid-template-columns:120px 1fr 140px 120px;background:#121723;border:1px solid var(--border);border-radius:10px;padding:8px;align-items:center}
+    .match-row .teams{display:flex;align-items:center;gap:8px}
+    .badge{display:inline-block;padding:4px 8px;border-radius:999px;font-size:12px}
+    .badge.upcoming{background:#203040;color:#aee0ff}
+    .badge.completed{background:#1d2a1f;color:#a9f0b1}
+    .badge.Today{background:#3d1212;color:#ffb3b3}
+    .points-table{overflow:auto}
+    .table{width:100%; border-collapse:collapse; background:#121723;border:1px solid var(--border);border-radius:12px}
+    .table th,.table td{padding:10px;border-bottom:1px solid var(--border);text-align:left}
+    .table th{color:#cfe1ff;background:#0f1623}
+    .table tr:last-child td{border-bottom:none}
+    .footer{padding:16px;border-top:1px solid var(--border);color:#8fa1c2;display:flex;justify-content:space-between}
+    @media (max-width:960px){.cards-grid{grid-template-columns:repeat(2,1fr)}.match-row{grid-template-columns:100px 1fr 120px 100px}}
+    @media (max-width:560px){.hero{grid-template-columns:1fr}.cards-grid{grid-template-columns:1fr}.match-row{grid-template-columns:90px 1fr}.match-row .badge,.match-row .venue,.match-row .time{display:none}}
+  </style>
+    <link rel="manifest" href="manifest.json">
+   <meta name="theme-color" content="#0f1115">
+  <link rel="icon" href="assets/icons/https://i.postimg.cc/0jSx3Gqg/Payra-Prashad-png.png" type="image/png">
+  <link rel="manifest" href="manifest.json">
+  <link rel="manifest" href="manifest.json"> 
+  <meta name="theme-color" content="#00bcd4">
+
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <img src="https://i.postimg.cc/0jSx3Gqg/Payra-Prashad-png.png" alt="GCM Sports" class="brand-icon">
+      <div>
+        <h1>GCM Sports </h1>
+        <span class="tagline">Play. Compete. Rise.</span>
+      </div>
+    </div>
+    <nav class="nav">
+      <a href="#home" class="nav-link active">Home</a>
+      <a href="#matches" class="nav-link">Matches</a>
+      <a href="#points" class="nav-link">Point table</a>
+      <a href="#teams" class="nav-link">Teams</a>
+    </nav>
+  </header>
+
+  <main>
+    <section id="hero" class="hero">
+      <div class="hero-slide"><div class="hero-text"><h2>এবারের টুর্নামেন্ট </h2><p>সর্বশেষ আপডেট, ম্যাচ শিডিউল ও পয়েন্ট—সব এক জায়গায়।</p></div></div>
+      <div class="hero-slide"><div class="hero-text"><h2>The Game is on </h2><p>আজকের ম্যাচগুলো দেখো এবং ফলাফলে চোখ রাখো।</p></div></div>
+    </section>
+
+    <section id="home" class="page">
+      <div class="section-header"><h3>আজকের ম্যাচ</h3><span class="sub">today's fixtures</span></div>
+      <div id="todayMatches" class="cards-grid"></div>
+
+      <div class="section-header"><h3>আপডেট</h3></div>
+      <div id="updates" class="update-list"></div>
+    </section>
+
+    <section id="matches" class="page hidden">
+      <div class="section-header">
+        <h3>সমস্ত ম্যাচ সূচি ও ফলাফল</h3>
+        <div class="filters">
+          <input type="date" id="filterDate" class="input">
+          <select id="filterTeam" class="input"></select>
+          <select id="filterStatus" class="input">
+            <option value="">All</option>
+            <option value="upcoming">Upcoming</option>
+            <option value="completed">Completed</option>
+            <option value="Today">Today</option>
+          </select>
+          <button id="clearFilters" class="btn">Clear</button>
+        </div>
+      </div>
+      <div id="matchList" class="match-table"></div>
+    </section>
+    <section id="teams" class="page hidden">
+    <!-- <div class="section-header"> -->
+      <h3>Teams & Players</h3></div>
+    <div id="teamRoster" class="cards-grid"></div>
+   </section>
+
+    <section id="points" class="page hidden">
+      <div class="section-header"><h3>পয়েন্ট টেবিল</h3><span class="sub">Rule: Win=2, Tie=1</span></div>
+      <div id="pointTable" class="points-table"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div>© Badminton Premier — From Team GCM</div>
+    <!-- <a href="admin/index.html">Admin panel</a> -->
+  </footer>
+
+  <script>
+    // Seed data into localStorage (first run)
+    (function seed(){
+      const KEY='bp_data_v1';
+      if(localStorage.getItem(KEY)) return;
+      const teams=[{id:'RKT',name:'Rocket Smashers',short:'RKT',logo:''},{id:'THN',name:'Thunder Drops',short:'THN',logo:''},{id:'BLZ',name:'Blaze Flyers',short:'BLZ',logo:''},{id:'NXT',name:'Next Gen',short:'NXT',logo:''}];
+      const today=new Date();const yyyy=today.getFullYear();const mm=String(today.getMonth()+1).padStart(2,'0');const dd=String(today.getDate()).padStart(2,'0');const todayStr=`${yyyy}-${mm}-${dd}`;
+      const matches=[{id:'M1',date:todayStr,time:'18:00',teamA:'RKT',teamB:'THN',venue:'Indoor Court A',status:'upcoming',result:null},{id:'M2',date:todayStr,time:'19:00',teamA:'BLZ',teamB:'NXT',venue:'Indoor Court B',status:'upcoming',result:null},{id:'M3',date:todayStr,time:'20:00',teamA:'RKT',teamB:'BLZ',venue:'Indoor Court A',status:'completed',result:{winner:'RKT',note:'2-1 games'}}];
+      const updates=[{id:'U1',text:'Welcome! Tonight triple-header begins.'},{id:'U2',text:'Court A resurfaced—expect fast rallies.'}];
+      localStorage.setItem(KEY, JSON.stringify({teams,matches,updates,meta:{pointsRules:{win:2,tie:1,loss:0}}}));
+    })();
+
+    // Viewer logic
+    const KEY='bp_data_v1';
+    const getData=()=>JSON.parse(localStorage.getItem(KEY))||{teams:[],matches:[],updates:[],meta:{pointsRules:{win:2,tie:1,loss:0}}};
+    const findTeam=(id,teams)=>teams.find(t=>t.id===id);
+
+    function calcPoints(data){
+      const rules=data.meta?.pointsRules||{win:2,tie:1,loss:0};
+      const table={};data.teams.forEach(t=>table[t.id]={team:t,P:0,W:0,L:0,T:0,Pts:0});
+      data.matches.forEach(m=>{
+        if(m.status!=='completed')return;
+        const a=table[m.teamA],b=table[m.teamB]; if(!a||!b)return;
+        a.P++; b.P++;
+        if(m.result?.winner){const winId=m.result.winner;const loseId=winId===m.teamA?m.teamB:m.teamA;table[winId].W++;table[winId].Pts+=rules.win;table[loseId].L++;table[loseId].Pts+=rules.loss;}
+        else{a.T++;b.T++;a.Pts+=rules.tie;b.Pts+=rules.tie;}
+      });
+      return Object.values(table).sort((x,y)=> y.Pts-x.Pts || y.W-x.W || x.L-y.L || x.team.name.localeCompare(y.team.name));
+    }
+
+    // function renderTodayMatches(data){
+    //   const cont=document.getElementById('todayMatches'); cont.innerHTML='';
+    //   const today=new Date().toISOString().slice(0,10);
+    //   const todays=data.matches.filter(m=>m.date===today);
+    //   const picks=todays.sort(()=>Math.random()-0.5).slice(0,3);
+    //   if(picks.length===0){cont.innerHTML='<div class="update-item">আজ কোনো ম্যাচ নেই।</div>';return;}
+    //   picks.forEach(m=>{
+    //     const ta=findTeam(m.teamA,data.teams),tb=findTeam(m.teamB,data.teams);
+    //     const card=document.createElement('div'); card.className='card-match';
+    //     card.innerHTML=`
+    //       <div class="team"><img class="team-logo" src="${ta.logo||'https://placehold.co/40x40'}" alt=""><strong>${ta.short}</strong></div>
+    //       <div class="vs">VS</div>
+    //       <div class="team"><img class="team-logo" src="${tb.logo||'https://placehold.co/40x40'}" alt=""><strong>${tb.short}</strong></div>
+    //       <div style="margin-left:auto; text-align:right">
+    //         <div class="badge ${m.status}">${m.status}</div>
+    //         <div class="time">${m.date} • ${m.time}</div>
+    //         <div class="venue">${m.venue}</div>
+    //       </div>`;
+    //     cont.appendChild(card);
+    //   });
+    // }
+function renderTodayMatches(data){
+  const cont = document.getElementById('todayMatches');
+  cont.innerHTML = '';
+
+  const today = new Date().toISOString().slice(0,10);
+  const todays = data.matches.filter(m => m.date === today);
+
+  if(todays.length === 0){
+    cont.innerHTML = '<div class="update-item">আজ কোনো ম্যাচ নেই।</div>';
+    return;
+  }
+
+  todays.forEach(m => {
+    const ta = findTeam(m.teamA, data.teams),
+          tb = findTeam(m.teamB, data.teams);
+
+    const card = document.createElement('div');
+    card.className = 'card-match';
+    card.innerHTML = `
+      <div class="team">
+        <img class="team-logo" src="${ta.logo || 'https://placehold.co/40x40'}" alt="">
+        <strong>${ta.short}</strong>
+      </div>
+      <div class="vs">VS</div>
+      <div class="team">
+        <img class="team-logo" src="${tb.logo || 'https://placehold.co/40x40'}" alt="">
+        <strong>${tb.short}</strong>
+      </div>
+      <div style="margin-left:auto; text-align:right">
+        <div class="badge ${m.status}">${m.status}</div>
+        <div class="venue">${m.venue}</div>
+      </div>`;
+    cont.appendChild(card);
+  });  }  
+
+    function renderUpdates(data){
+      const cont=document.getElementById('updates'); cont.innerHTML='';
+      data.updates.slice().reverse().forEach(u=>{
+        const div=document.createElement('div'); div.className='update-item'; div.textContent=u.text; cont.appendChild(div);
+      });
+    }
+
+    function renderFilters(data){
+      const teamSel=document.getElementById('filterTeam');
+      teamSel.innerHTML='<option value="">All teams</option>'+data.teams.map(t=>`<option value="${t.id}">${t.name}</option>`).join('');
+    }
+
+    function renderMatches(data){
+      const wrap=document.getElementById('matchList'); wrap.innerHTML='';
+      const fDate=document.getElementById('filterDate').value;
+      const fTeam=document.getElementById('filterTeam').value;
+      const fStatus=document.getElementById('filterStatus').value;
+      let list=data.matches.slice().sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
+      if(fDate) list=list.filter(m=>m.date===fDate);
+      if(fTeam) list=list.filter(m=>m.teamA===fTeam||m.teamB===fTeam);
+      if(fStatus) list=list.filter(m=>m.status===fStatus);
+      if(list.length===0){wrap.innerHTML='<div class="update-item">No matches found for the selected filters.</div>';return;}
+      list.forEach(m=>{
+        const ta=findTeam(m.teamA,data.teams),tb=findTeam(m.teamB,data.teams);
+        const row=document.createElement('div'); row.className='match-row';
+        const resultText=m.status==='completed' ? (m.result?.winner ? `Winner: ${findTeam(m.result.winner,data.teams)?.name || m.result.winner}` : 'Tie') : '';
+        row.innerHTML=`
+          <div class="time">${m.date} ${m.time}</div>
+          <div class="teams">
+            <div class="team"><img class="team-logo" src="${ta.logo||'https://placehold.co/28'}" alt=""><strong>${ta.short}</strong></div>
+            <span class="vs">VS</span>
+            <div class="team"><img class="team-logo" src="${tb.logo||'https://placehold.co/28'}" alt=""><strong>${tb.short}</strong></div>
+          </div>
+          <div class="venue">${m.venue}</div>
+          <div style="text-align:right">
+            <span class="badge ${m.status}">${m.status}</span><br/>
+            <small>${resultText} ${m.result?.note ? `• ${m.result.note}`:''}</small>
+          </div>`;
+        wrap.appendChild(row);
+      });
+    }
+
+    function renderPoints(data){
+  const cont=document.getElementById('pointTable'); 
+  cont.innerHTML='';
+  const table=calcPoints(data);
+  cont.innerHTML=`
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Team</th><th>Played</th><th>Win</th><th>Loss</th><th>Tie</th><th>Points</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${table.map(r=>`
+          <tr>
+            <td style="display:flex;align-items:center;gap:8px">
+              <img src="${r.team.logo||'https://placehold.co/24'}" 
+                   alt="" 
+                   style="width:24px;height:24px;border-radius:50%;object-fit:cover;border:1px solid #263043">
+              ${r.team.name}
+            </td>
+            <td>${r.P}</td>
+            <td>${r.W}</td>
+            <td>${r.L}</td>
+            <td>${r.T}</td>
+            <td>${r.Pts}</td>
+          </tr>`).join('')}
+      </tbody>
+    </table>`;
+    } 
+
+    function route(){
+      const hash=location.hash.replace('#','')||'home';
+      document.querySelectorAll('.nav-link').forEach(a=>a.classList.toggle('active',a.getAttribute('href')===`#${hash}`));
+      document.querySelectorAll('.page').forEach(p=>p.classList.add('hidden'));
+      document.getElementById(hash)?.classList.remove('hidden');
+    }
+
+    function renderTeams(data){
+  const cont = document.getElementById('teamRoster');
+  cont.innerHTML = '';
+  data.teams.forEach(t => {
+    const card = document.createElement('div');
+    card.className = 'card-match';
+    card.innerHTML = `
+      <div class="team">
+        <img class="team-logo" src="${t.logo||'https://placehold.co/40'}" alt="">
+        <strong>${t.name}</strong>
+      </div>
+      <ul style="margin-top:8px; padding-left:20px; color:#cfd9f2">
+        ${t.players?.map(p=>`<li>${p}</li>`).join('') || '<li>No players listed</li>'}
+      </ul>
+    `;
+    cont.appendChild(card);
+  });
+   }
+
+   
+
+    function initViewer(){
+      route();
+      const data=getData();
+      renderFilters(data);
+      renderTodayMatches(data);
+      renderUpdates(data);
+      renderMatches(data);
+      renderPoints(data);
+      renderTeams(getData());
+
+      window.addEventListener('hashchange', route);
+      document.getElementById('filterDate').addEventListener('change',()=>renderMatches(getData()));
+      document.getElementById('filterTeam').addEventListener('change',()=>renderMatches(getData()));
+      document.getElementById('filterStatus').addEventListener('change',()=>renderMatches(getData()));
+      document.getElementById('clearFilters').addEventListener('click',()=>{
+        document.getElementById('filterDate').value='';
+        document.getElementById('filterTeam').value='';
+        document.getElementById('filterStatus').value='';
+        renderMatches(getData());
+      });
+    }
+    document.addEventListener('DOMContentLoaded', initViewer);
+  </script>
+   <script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js');
+  }
+</script>
+
+<meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>GCM Sports</title>
+  
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    overflow-x: hidden;
+  }
+  .main-content {
+    min-height: 100dvh; /* মোবাইলের usable height */
+  }
+</style>
+
+</body>
+</html>
